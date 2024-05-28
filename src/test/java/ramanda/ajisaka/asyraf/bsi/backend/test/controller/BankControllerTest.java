@@ -31,8 +31,8 @@ public class BankControllerTest {
 
     @BeforeEach
     void setUp() {
-        accountRepository.deleteAll();
         transactionRepository.deleteAll();
+        accountRepository.deleteAll();
     }
 
     @Test
@@ -63,7 +63,7 @@ public class BankControllerTest {
                 .andExpect(jsonPath("$.transactionType").value("DEPOSIT"));
 
         Account updatedAccount = accountRepository.findByAccountNumber("12345");
-        assertEquals(BigDecimal.valueOf(1500), updatedAccount.getBalance());
+        assertEquals(0, BigDecimal.valueOf(1500).compareTo(updatedAccount.getBalance()));
     }
 
     @Test
@@ -81,6 +81,6 @@ public class BankControllerTest {
                 .andExpect(jsonPath("$.transactionType").value("WITHDRAWAL"));
 
         Account updatedAccount = accountRepository.findByAccountNumber("12345");
-        assertEquals(BigDecimal.valueOf(500), updatedAccount.getBalance());
+        assertEquals(0, BigDecimal.valueOf(500).compareTo(updatedAccount.getBalance()));
     }
 }

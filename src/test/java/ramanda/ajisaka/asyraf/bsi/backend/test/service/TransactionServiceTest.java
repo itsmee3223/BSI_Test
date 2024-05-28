@@ -12,6 +12,8 @@ import ramanda.ajisaka.asyraf.bsi.backend.test.entity.TransactionType;
 import ramanda.ajisaka.asyraf.bsi.backend.test.repository.TransactionRepository;
 
 import java.math.BigDecimal;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class TransactionServiceTest {
@@ -42,11 +44,16 @@ public class TransactionServiceTest {
         transaction.setAmount(BigDecimal.valueOf(500));
         transaction.setTransactionType(TransactionType.DEPOSIT);
 
-        when(transactionRepository.save(transaction)).thenReturn(transaction);
+        when(transactionRepository.save(any(Transaction.class))).thenAnswer(invocation -> {
+            Transaction savedTransaction = invocation.getArgument(0);
+            savedTransaction.setId(1L);
+            return savedTransaction;
+        });
 
         Transaction savedTransaction = transactionService.deposit("12345", BigDecimal.valueOf(500));
 
         assertEquals(BigDecimal.valueOf(1500), account.getBalance());
+        assertEquals(BigDecimal.valueOf(500), savedTransaction.getAmount());
         assertEquals(TransactionType.DEPOSIT, savedTransaction.getTransactionType());
     }
 
@@ -64,11 +71,16 @@ public class TransactionServiceTest {
         transaction.setAmount(BigDecimal.valueOf(500));
         transaction.setTransactionType(TransactionType.WITHDRAWAL);
 
-        when(transactionRepository.save(transaction)).thenReturn(transaction);
+        when(transactionRepository.save(any(Transaction.class))).thenAnswer(invocation -> {
+            Transaction savedTransaction = invocation.getArgument(0);
+            savedTransaction.setId(1L);
+            return savedTransaction;
+        });
 
         Transaction savedTransaction = transactionService.withdraw("12345", BigDecimal.valueOf(500));
 
         assertEquals(BigDecimal.valueOf(500), account.getBalance());
+        assertEquals(BigDecimal.valueOf(500), savedTransaction.getAmount());
         assertEquals(TransactionType.WITHDRAWAL, savedTransaction.getTransactionType());
     }
 }
